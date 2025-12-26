@@ -1,26 +1,28 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
-import { Activity } from 'lucide-react';
+import Dashboard from './pages/Dashboard';
+import RegisterChild from './pages/RegisterChild';
 
-const Dashboard = () => <div className="p-10 text-center text-2xl font-bold text-green-600">Hospital Dashboard (Protected)</div>;
+// Placeholder for History (Coming next)
+const VaccinationRecords = () => (
+  <div className="flex bg-background min-h-screen">
+    {/* Temporary inline Sidebar for placeholder */}
+    <div className="w-64 bg-white border-r h-screen fixed"></div> 
+    <div className="ml-64 p-10 font-bold text-gray-400">Vaccination History Page (Coming Soon)</div>
+  </div>
+);
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-background text-gray-800">
-        {/* Navbar */}
-        <nav className="p-4 bg-white shadow-sm border-b border-gray-100">
-          <div className="container mx-auto flex items-center gap-2">
-            <div className="bg-primary/10 p-2 rounded-lg">
-              <Activity className="text-primary w-6 h-6" />
-            </div>
-            <h1 className="text-xl font-bold text-primary tracking-tight">Sontya <span className="text-gray-400 font-normal">| Hospital</span></h1>
-          </div>
-        </nav>
-        
         <Routes>
           <Route path="/login" element={<Login />} />
+          {/* Protected Routes */}
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/register-child" element={<RegisterChild />} />
+          <Route path="/vaccination-records" element={<VaccinationRecords />} />
+          
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </div>
