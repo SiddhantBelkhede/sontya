@@ -29,7 +29,14 @@ const RegisterChild = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // Prevent negative values for weight
+    if (name === 'weight' && value < 0) {
+      return; 
+    }
+
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -45,7 +52,7 @@ const RegisterChild = () => {
         uniqueId: uniqueId,
         hospitalId: auth.currentUser.uid,
         createdAt: new Date().toISOString(),
-        vaccinationHistory: [] // Empty array for now
+        vaccinationHistory: [] 
       });
 
       setSuccessId(uniqueId);
@@ -124,11 +131,20 @@ const RegisterChild = () => {
                   className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none" />
               </div>
 
-              {/* Weight */}
+              {/* Weight - Updated with validation */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Birth Weight (kg)</label>
-                <input required type="number" step="0.1" name="weight" value={formData.weight} onChange={handleChange} 
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none" placeholder="3.5" />
+                <input 
+                  required 
+                  type="number" 
+                  step="0.1" 
+                  min="0"
+                  name="weight" 
+                  value={formData.weight} 
+                  onChange={handleChange} 
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none" 
+                  placeholder="3.5" 
+                />
               </div>
 
               {/* Blood Group */}
