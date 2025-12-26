@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Baby, Syringe, LogOut, Activity } from 'lucide-react';
-import { auth } from '../config/firebase';
+import React from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LayoutDashboard, Baby, Syringe, LogOut, Activity } from "lucide-react";
+import { auth } from "../config/firebase";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -9,15 +9,27 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     await auth.signOut();
-    navigate('/login');
+    navigate("/login");
   };
 
   const isActive = (path) => location.pathname === path;
 
   const navItems = [
-    { path: '/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
-    { path: '/register-child', icon: <Baby size={20} />, label: 'Register Newborn' },
-    { path: '/vaccination-records', icon: <Syringe size={20} />, label: 'Vaccination History' },
+    {
+      path: "/dashboard",
+      icon: <LayoutDashboard size={20} />,
+      label: "Dashboard",
+    },
+    {
+      path: "/register-child",
+      icon: <Baby size={20} />,
+      label: "Register Newborn",
+    },
+    {
+      path: "/vaccination-records",
+      icon: <Syringe size={20} />,
+      label: "Vaccination History",
+    },
   ];
 
   return (
@@ -27,7 +39,9 @@ const Sidebar = () => {
         <div className="bg-primary/10 p-2 rounded-lg">
           <Activity className="text-primary w-6 h-6" />
         </div>
-        <span className="font-bold text-xl text-gray-800 tracking-tight">Sontya</span>
+        <span className="font-bold text-xl text-gray-800 tracking-tight">
+          Sontya
+        </span>
       </div>
 
       {/* Navigation Links */}
@@ -38,8 +52,8 @@ const Sidebar = () => {
             to={item.path}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
               isActive(item.path)
-                ? 'bg-primary text-white shadow-md shadow-blue-200'
-                : 'text-gray-500 hover:bg-blue-50 hover:text-primary'
+                ? "bg-primary text-white shadow-md shadow-blue-200"
+                : "text-gray-500 hover:bg-blue-50 hover:text-primary"
             }`}
           >
             {item.icon}

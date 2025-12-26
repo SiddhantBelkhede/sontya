@@ -1,23 +1,35 @@
-import React, { useState } from 'react';
-import { auth, db } from '../config/firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
-import { Activity, Building2, Lock, Mail, MapPin, Eye, EyeOff, Loader2 } from 'lucide-react';
+import React, { useState } from "react";
+import { auth, db } from "../config/firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import {
+  Activity,
+  Building2,
+  Lock,
+  Mail,
+  MapPin,
+  Eye,
+  EyeOff,
+  Loader2,
+} from "lucide-react";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    hospitalName: '',
-    location: ''
+    email: "",
+    password: "",
+    hospitalName: "",
+    location: "",
   });
 
   // Store precise coordinates for the map feature later
@@ -42,15 +54,21 @@ const Login = () => {
         try {
           // Free reverse geocoding to get City/State name for the text box
           const response = await fetch(
-            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
           );
           const data = await response.json();
           // specific format: City, PrincipalSubdivision (State)
           const cityState = `${data.city || data.locality}, ${data.principalSubdivision}`;
-          setFormData(prev => ({ ...prev, location: cityState }));
+          setFormData((prev) => ({ ...prev, location: cityState }));
         } catch (err) {
-          console.error("Could not fetch address name, using coordinates.", err);
-          setFormData(prev => ({ ...prev, location: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}` }));
+          console.error(
+            "Could not fetch address name, using coordinates.",
+            err,
+          );
+          setFormData((prev) => ({
+            ...prev,
+            location: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+          }));
         } finally {
           setLocationLoading(false);
         }
@@ -58,22 +76,30 @@ const Login = () => {
       (err) => {
         setError("Unable to retrieve your location. Please enter it manually.");
         setLocationLoading(false);
-      }
+      },
     );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
       if (isLogin) {
         // Login Logic
-        await signInWithEmailAndPassword(auth, formData.email, formData.password);
+        await signInWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password,
+        );
       } else {
         // Signup Logic
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password,
+        );
         const user = userCredential.user;
 
         // Create Hospital Profile in Firestore
@@ -83,13 +109,13 @@ const Login = () => {
           location: formData.location,
           coordinates: coordinates || null, // Precise for maps
           createdAt: new Date().toISOString(),
-          uid: user.uid
+          uid: user.uid,
         });
       }
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      setError(err.message.replace('Firebase: ', ''));
+      setError(err.message.replace("Firebase: ", ""));
     } finally {
       setLoading(false);
     }
@@ -104,10 +130,12 @@ const Login = () => {
             <Activity className="text-white w-8 h-8" />
           </div>
           <h2 className="text-2xl font-bold text-white">
-            {isLogin ? 'Hospital Portal Login' : 'Register New Hospital'}
+            {isLogin ? "Hospital Portal Login" : "Register New Hospital"}
           </h2>
           <p className="text-blue-100 mt-2 text-sm">
-            {isLogin ? 'Access your vaccination management dashboard' : 'Join the Sontya network'}
+            {isLogin
+              ? "Access your vaccination management dashboard"
+              : "Join the Sontya network"}
           </p>
         </div>
 
@@ -165,7 +193,9 @@ const Login = () => {
                 </div>
                 {coordinates && (
                   <p className="text-xs text-green-600 ml-1">
-                    ✓ Precise location captured (Lat: {coordinates.latitude.toFixed(2)}, Lng: {coordinates.longitude.toFixed(2)})
+                    ✓ Precise location captured (Lat:{" "}
+                    {coordinates.latitude.toFixed(2)}, Lng:{" "}
+                    {coordinates.longitude.toFixed(2)})
                   </p>
                 )}
               </>
@@ -200,7 +230,11 @@ const Login = () => {
                 className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
 
@@ -209,7 +243,11 @@ const Login = () => {
               disabled={loading}
               className="w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md disabled:opacity-50"
             >
-              {loading ? 'Processing...' : (isLogin ? 'Login' : 'Register Hospital')}
+              {loading
+                ? "Processing..."
+                : isLogin
+                  ? "Login"
+                  : "Register Hospital"}
             </button>
           </form>
 
@@ -218,7 +256,9 @@ const Login = () => {
               onClick={() => setIsLogin(!isLogin)}
               className="text-primary hover:underline text-sm font-medium"
             >
-              {isLogin ? "Don't have an account? Register here" : "Already registered? Login here"}
+              {isLogin
+                ? "Don't have an account? Register here"
+                : "Already registered? Login here"}
             </button>
           </div>
         </div>

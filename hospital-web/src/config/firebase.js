@@ -3,17 +3,17 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB3GSTcLZHxWlZgQP8Q8hnPK6jydCcL_h0",
-  authDomain: "sontya-hackathon.firebaseapp.com",
-  projectId: "sontya-hackathon",
-  storageBucket: "sontya-hackathon.firebasestorage.app",
-  messagingSenderId: "235300153514",
-  appId: "1:235300153514:web:a377335372b834720648d3"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Initialize app
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Export auth and db instances
+// Export Services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
