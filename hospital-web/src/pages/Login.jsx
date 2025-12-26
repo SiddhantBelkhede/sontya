@@ -3,11 +3,12 @@ import { auth, db } from '../config/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Building2, Lock, Mail, MapPin, Eye, EyeOff } from 'lucide-react';
+import { Activity, Building2, Lock, Mail, MapPin, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -19,8 +20,46 @@ const Login = () => {
     location: ''
   });
 
+  // Store precise coordinates for the map feature later
+  const [coordinates, setCoordinates] = useState(null);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setLocationLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        setCoordinates({ latitude, longitude });
+
+        try {
+          // Free reverse geocoding to get City/State name for the text box
+          const response = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+          );
+          const data = await response.json();
+          // specific format: City, PrincipalSubdivision (State)
+          const cityState = `${data.city || data.locality}, ${data.principalSubdivision}`;
+          setFormData(prev => ({ ...prev, location: cityState }));
+        } catch (err) {
+          console.error("Could not fetch address name, using coordinates.", err);
+          setFormData(prev => ({ ...prev, location: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}` }));
+        } finally {
+          setLocationLoading(false);
+        }
+      },
+      (err) => {
+        setError("Unable to retrieve your location. Please enter it manually.");
+        setLocationLoading(false);
+      }
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -42,6 +81,7 @@ const Login = () => {
           name: formData.hospitalName,
           email: formData.email,
           location: formData.location,
+          coordinates: coordinates || null, // Precise for maps
           createdAt: new Date().toISOString(),
           uid: user.uid
         });
@@ -94,18 +134,40 @@ const Login = () => {
                     required
                   />
                 </div>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    name="location"
-                    placeholder="Location (City, Area)"
-                    className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
-                    value={formData.location}
-                    onChange={handleChange}
-                    required
-                  />
+
+                {/* Dynamic Location Section */}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <MapPin className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+                    <input
+                      type="text"
+                      name="location"
+                      placeholder="Location"
+                      className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                      value={formData.location}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={detectLocation}
+                    disabled={locationLoading}
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-600 p-2 rounded-lg transition-colors border border-gray-200"
+                    title="Detect Current Location"
+                  >
+                    {locationLoading ? (
+                      <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                    ) : (
+                      <MapPin className="w-5 h-5 text-primary" />
+                    )}
+                  </button>
                 </div>
+                {coordinates && (
+                  <p className="text-xs text-green-600 ml-1">
+                    ✓ Precise location captured (Lat: {coordinates.latitude.toFixed(2)}, Lng: {coordinates.longitude.toFixed(2)})
+                  </p>
+                )}
               </>
             )}
 
