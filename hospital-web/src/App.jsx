@@ -7,7 +7,6 @@ import {
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import RegisterChild from "./pages/RegisterChild";
-// IMPORT THE NEW PAGE HERE
 import VaccinationRecords from "./pages/VaccinationRecords";
 
 function App() {

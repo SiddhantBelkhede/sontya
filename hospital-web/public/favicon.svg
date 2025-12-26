@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Shield Shape representing Immunity -->
+  <path d="M50 5 L85 20 V45 C85 70 50 95 50 95 C50 95 15 70 15 45 V20 L50 5 Z" fill="#0F67B1"/>
+  
+  <!-- Medical Cross -->
+  <path d="M50 30 V60 M35 45 H65" stroke="white" stroke-width="10" stroke-linecap="round"/>
+</svg>
